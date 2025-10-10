@@ -26,9 +26,10 @@ const WriteArticle = () => {
     try {
       setLoading(true);
       const prompt = `Write an article about ${input} in ${selectedLength.text}`;
-
+       // sending request to backend
       const { data } = await axios.post(
         "/api/ai/generate-article",
+        // sending prompt and length in req.body
         {
           prompt,
           length: selectedLength.length,
@@ -37,6 +38,7 @@ const WriteArticle = () => {
           headers: { Authorization: `Bearer ${await getToken()}` },
         }
       );
+      // checking  the generated article from backend 
       if (data.success) {
         setContent(data.content);
       } else {
@@ -104,7 +106,7 @@ const WriteArticle = () => {
           <Edit className="w-5 h-5 text-[#4A7AFF]" />
           <h1 className="text-xl font-semibold">Generated Article</h1>
         </div>
-        {/* Response */}
+        {/* Final Response */}
         {!content ? (
           <div className="flex-1 flex justify-center items-center">
             <div className="text-sm flex flex-col items-center gap-5 text-gray-400">
