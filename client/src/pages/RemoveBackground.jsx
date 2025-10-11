@@ -91,9 +91,7 @@ const RemoveBackground = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-3 h-full">
-            <img src={content} alt="image" className="w-full h-full" />
-          </div>
+          <img src={content} alt="image" className=" mt-3 w-full h-full" />
         )}
       </div>
     </div>
