@@ -1,22 +1,30 @@
+/* Import Google Fonts: Outfit for general text and Playfair Display for headings */
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
+
+/* Import TailwindCSS utilities */
 @import "tailwindcss";
 
+/* Apply Outfit font to all elements by default */
 * {
   font-family: "Outfit", sans-serif;
 }
 
+/* Primary color utility class */
 .primary {
   background-color: #5044e5;
 }
 
-@theme {
-  --color--primary: #5044e5;
+/* CSS variable for primary color (useful for dynamic theming) */
+:root {
+  --color-primary: #5044e5;
 }
 
-.reset-tw,.reset-tw *{
+/* Reset all Tailwind styles inside elements with .reset-tw */
+.reset-tw, .reset-tw * {
   all: revert !important;
 }
 
-.cl-drawerRoot{
+/* Override z-index for Clerk drawer component to ensure it appears above other elements */
+.cl-drawerRoot {
   z-index: 10;
 }

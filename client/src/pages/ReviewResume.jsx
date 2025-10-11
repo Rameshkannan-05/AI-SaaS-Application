@@ -6,15 +6,28 @@ import Formdata from "form-data";
 import toast from "react-hot-toast";
 import Markdown from "react-markdown";
 
+// Set axios base URL from environment variables
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
+/**
+ * ReviewResume Component
+ * - Allows users to upload a PDF resume for AI-based review
+ * - Sends resume file to backend API "/api/ai/resume-review"
+ * - Displays analysis results using Markdown formatting
+ */
 const ReviewResume = () => {
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
+  // State variables
+  const [input, setInput] = useState(null); // uploaded resume file
+  const [loading, setLoading] = useState(false); // API loading state
+  const [content, setContent] = useState(""); // AI analysis results
 
-  const { getToken } = useAuth();
+  const { getToken } = useAuth(); // Clerk auth hook for JWT token
 
+  /**
+   * Handle form submission
+   * - Sends the uploaded resume to backend
+   * - Sets the content state with analysis results
+   */
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -22,13 +35,12 @@ const ReviewResume = () => {
       const formData = new Formdata();
       formData.append("resume", input);
 
-      // sending request to backend
       const { data } = await axios.post("/api/ai/resume-review", formData, {
         headers: { Authorization: `Bearer ${await getToken()}` },
       });
-      // checking the response
+
       if (data.success) {
-        setContent(data.content);
+        setContent(data.content); // set AI analysis results
       } else {
         toast.error(data.message);
       }
@@ -40,16 +52,17 @@ const ReviewResume = () => {
 
   return (
     <div className="h-full overflow-y-scroll p-6 flex items-start flex-wrap gap-4 text-slate-700">
-      {/* Left Column */}
+      {/* Left Column: Upload Resume Form */}
       <form
         onSubmit={onSubmitHandler}
-        action=""
         className="w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200"
       >
         <div className="flex items-center gap-3">
           <Sparkles className="w-6 text-[#00DA83]" />
           <h1 className="text-xl font-semibold">Resume Review</h1>
         </div>
+
+        {/* File input for PDF resume */}
         <p className="mt-6 text-sm font-medium">Upload Resume</p>
         <input
           onChange={(e) => setInput(e.target.files[0])}
@@ -62,6 +75,7 @@ const ReviewResume = () => {
           Supports PDF resume only.
         </p>
 
+        {/* Submit button */}
         <button
           disabled={loading}
           className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#00DA83] to-[#009BB3] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer"
@@ -74,13 +88,15 @@ const ReviewResume = () => {
           Review Resume
         </button>
       </form>
-      {/* Right Column */}
+
+      {/* Right Column: Display AI Analysis Results */}
       <div className="w-full max-w-lg p-4 bg-white rounded-lg flex flex-col border border-gray-200 min-h-96 max-h-[600px]">
         <div className="flex items-center gap-3">
           <FileText className="w-5 h-5 text-[#00DA83]" />
           <h1 className="text-xl font-semibold">Analysis Results</h1>
         </div>
-        {/* Response */}
+
+        {/* Conditional rendering: show instructions or analysis results */}
         {!content ? (
           <div className="flex-1 flex justify-center items-center">
             <div className="text-sm flex flex-col items-center gap-5 text-gray-400">
@@ -91,7 +107,8 @@ const ReviewResume = () => {
         ) : (
           <div className="mt-3 h-full overflow-y-scroll text-sm text-slate-600">
             <div className="reset-tw">
-              <Markdown>{content}</Markdown>
+              <Markdown>{content}</Markdown>{" "}
+              {/* Render Markdown formatted results */}
             </div>
           </div>
         )}

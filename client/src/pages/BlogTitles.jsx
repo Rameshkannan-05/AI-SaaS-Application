@@ -5,9 +5,17 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Markdown from "react-markdown";
 
+// Set the base URL for axios from environment variable
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
+/**
+ * BlogTitles Component
+ * - Allows users to generate AI-based blog titles
+ * - Users can select a category and input a keyword
+ * - Uses backend API "/api/ai/generate-blog-title"
+ */
 const BlogTitles = () => {
+  // Available blog categories
   const blogCategories = [
     "General",
     "Technology",
@@ -19,32 +27,36 @@ const BlogTitles = () => {
     "Food",
   ];
 
-  const [selectedCategory, setSelectedCategory] = useState("General");
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
+  // State variables
+  const [selectedCategory, setSelectedCategory] = useState("General"); // currently selected category
+  const [input, setInput] = useState(""); // keyword input
+  const [loading, setLoading] = useState(false); // loading state for API call
+  const [content, setContent] = useState(""); // AI-generated title
 
-  const { getToken } = useAuth();
+  const { getToken } = useAuth(); // Clerk auth hook to get JWT token
 
+  /**
+   * Handle form submission
+   * - Calls backend API to generate blog title
+   */
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const prompt = `Generate a blog title for the keyword ${input} in the category ${selectedCategory}`;
-      // sending request to backend
+
+      // Sending POST request to backend with auth token
       const { data } = await axios.post(
         "/api/ai/generate-blog-title",
-        // sending prompt in req.body
-        {
-          prompt,
-        },
+        { prompt },
         {
           headers: { Authorization: `Bearer ${await getToken()}` },
         }
       );
-      // checking the response
+
+      // Handle response
       if (data.success) {
-        setContent(data.content);
+        setContent(data.content); // update content with generated title
       } else {
         toast.error(data.message);
       }
@@ -56,16 +68,17 @@ const BlogTitles = () => {
 
   return (
     <div className="h-full overflow-y-scroll p-6 flex items-start flex-wrap gap-4 text-slate-700">
-      {/* Left Column */}
+      {/* Left Column: Input form */}
       <form
         onSubmit={onSubmitHandler}
-        action=""
         className="w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200"
       >
         <div className="flex items-center gap-3">
           <Sparkles className="w-6 text-[#8E37EB]" />
           <h1 className="text-xl font-semibold">AI Title Generator</h1>
         </div>
+
+        {/* Keyword input */}
         <p className="mt-6 text-sm font-medium">Keyword</p>
         <input
           onChange={(e) => setInput(e.target.value)}
@@ -75,6 +88,8 @@ const BlogTitles = () => {
           placeholder="The future of artificial intelligence is..."
           required
         />
+
+        {/* Category selection */}
         <p className="mt-4 text-sm font-medium">Category</p>
         <div className="mt-3 flex gap-3 flex-wrap sm:max-w-9/11">
           {blogCategories.map((item) => (
@@ -91,7 +106,8 @@ const BlogTitles = () => {
             </span>
           ))}
         </div>
-        <br />
+
+        {/* Submit button */}
         <button
           disabled={loading}
           className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#C341F6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer"
@@ -104,13 +120,15 @@ const BlogTitles = () => {
           Generate title
         </button>
       </form>
-      {/* Right Column */}
+
+      {/* Right Column: Display generated titles */}
       <div className="w-full max-w-lg p-4 bg-white rounded-lg flex flex-col border border-gray-200 min-h-96">
         <div className="flex items-center gap-3">
           <Hash className="w-5 h-5 text-[#8E37EB]" />
           <h1 className="text-xl font-semibold">Generated Titles</h1>
         </div>
-        {/* Final Response */}
+
+        {/* Conditional rendering: show instructions or generated content */}
         {!content ? (
           <div className="flex-1 flex justify-center items-center">
             <div className="text-sm flex flex-col items-center gap-5 text-gray-400">
@@ -121,7 +139,8 @@ const BlogTitles = () => {
         ) : (
           <div className="mt-3 h-full overflow-y-scroll text-sm text-slate-600">
             <div className="reset-tw">
-              <Markdown>{content}</Markdown>
+              <Markdown>{content}</Markdown>{" "}
+              {/* Render AI-generated title as Markdown */}
             </div>
           </div>
         )}

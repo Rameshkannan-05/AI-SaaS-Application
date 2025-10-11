@@ -8,11 +8,21 @@ import {
 
 const userRouter = express.Router();
 
-// we don't have to send anything from the body, so GET method
+/**
+ * Routes for user-related operations
+ * All routes require authentication (auth middleware)
+ */
+
+// Fetch all creations of the logged-in user
+// GET request, no body required
 userRouter.get("/get-user-creations", auth, getUserCreations);
+
+// Fetch all published creations
+// GET request, no body required
 userRouter.get("/get-published-creations", auth, getPublishedCreations);
 
-// we have to send the creationId from the body, so POST method
+// Toggle like/unlike on a creation
+// POST request, requires { creationId } in body
 userRouter.post("/toggle-like-creation", auth, toggleLikeCreation);
 
 export default userRouter;
