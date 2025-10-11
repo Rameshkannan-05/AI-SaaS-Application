@@ -5,11 +5,10 @@ import FormData from "form-data";
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-// import pkg from "pdf-parse";
-// const pdf = pkg;
-const { default: pdf } = await import("pdf-parse");
 
-
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pdf = require("pdf-parse");
 
 // Gemini AI
 const AI = new OpenAI({
@@ -188,7 +187,7 @@ export const generateImage = async (req, res) => {
 export const removeImageBackground = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const  image  = req.file;
+    const image = req.file;
     const plan = req.plan;
 
     // image generation is only for premium users
@@ -231,7 +230,7 @@ export const removeImageObject = async (req, res) => {
   try {
     const { userId } = req.auth();
     const { object } = req.body;
-    const  image  = req.file;
+    const image = req.file;
     const plan = req.plan;
 
     // image generation is only for premium users
@@ -322,7 +321,6 @@ export const resumeReview = async (req, res) => {
 
     // final response to the client
     res.json({ success: true, content });
-
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });
